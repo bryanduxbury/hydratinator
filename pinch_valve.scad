@@ -57,7 +57,7 @@ module lower_plate() {
 }
 
 module upper_plate() {
-  color([128/255, 0/255, 128/255]) render() !difference() {
+  color([128/255, 0/255, 128/255]) render() difference() {
     // main disk
     cylinder(r=50, h=3, center=true, $fn=72);
     // central cutout for the selector wheel
@@ -91,6 +91,95 @@ module upper_plate() {
   }
 }
 
+module upper_to_top_strut() {
+  color([220/255, 0/255, 0/255]) {
+    translate([-14 + 1.5, -9 + 3, 0]) cylinder(r=1.5, h=3, center=true, $fn=36);
+    translate([14 - 1.5, -9 + 3, 0]) cylinder(r=1.5, h=3, center=true, $fn=36);
+    
+    translate([14 - 4 - 1.5, 9, 0]) cylinder(r=1.5, h=3, center=true, $fn=36);
+    translate([14 - 4 - 1.5 - 10, 9, 0]) cylinder(r=1.5, h=3, center=true, $fn=36);
+    
+    
+    // linear_extrude(height=3, center=true) {
+    //   polygon([
+    //     [-2, 9],
+    //     [0, 9],
+    //     [0, 6],
+    //     [2.5, 6],
+    //     [2.5, 3],
+    //     [1.5, 3],
+    //     [1.5, 1],
+    //     [2.5, 1],
+    //     [2.5, -2],
+    //     [5.5, -2],
+    //     [5.5, 1],
+    //     [6.5, 1],
+    //     [6.5, 3],
+    //     [5.5, 3],
+    //     [5.5, 6],
+    //     [8, 6],
+    //     [8, 9],
+    //     [10, 9],
+    //     [14, -7],
+    //     [14, -9],
+    //     [-14, -9],
+    //     [-14, -7]
+    //   ]);
+    // }
+    
+    // difference() {
+      // cube(size=[28, 18, 3], center=true);
+    //   // 8 to edge
+    //   #translate([0, 0, 0]) cube(size=[10, 10, 3.1]);
+    // }
+    
+  }
+  
+}
+
+module top_plate() {
+  color([0/255, 64/255, 128/255]) difference() {
+    union() {
+      // main disk
+      cylinder(r=40, h=3, center=true, $fn=72);
+
+      // for (i=[0:7]) {
+      //   rotate([0, 0, 360/8 * i + 360/16]) {
+      //     translate([40, 0, 0]) cylinder(r=5.5, h=3, center=true);
+      //   }
+      // }
+    }
+
+    // central cutout for the selector wheel
+    cylinder(r=30, h=3.1, center=true, $fn=72);
+
+
+    // loop for all the valves
+    for (i=[0:7]) {
+      rotate([0, 0, 360/8 * i]) {
+        translate([35, 0, 0]) {
+          // central hole for the hose
+          cylinder(r=1.6, h=3.1, center=true, $fn=36);
+          for (a=[-1,1]) for (b=[-1, 1]) {
+            translate([a * 3, b * 3, 0]) cube(size=[1.5, 2, 3.1], center=true);
+          }
+        }
+      }
+      rotate([0, 0, 360/8 * i + 360 / 16]) {
+        translate([40, 0, 0]) {
+          cube(size=[3, 3, 3.1], center=true);
+        }
+        
+        translate([35, 0, 0]) cylinder(r=1.5, h=3.1, center=true, $fn=36);
+        
+        translate([30, 0, 0]) {
+          cube(size=[3, 3, 3.1], center=true);
+        }
+      }
+    }
+  }
+}
+
 module selector_wheel() {
   color([0/255, 255/255, 0/255]) difference() {
     cylinder(r=20.5, h=3, center=true, $fn=72);
@@ -102,7 +191,6 @@ module selector_wheel() {
         translate([6.35, 0, 0]) cylinder(r=1.5, h=10, center=true, $fn=36);
       }
     }
-    
   }
 }
 
@@ -122,7 +210,7 @@ for (d=[-3,-6]) {
 
 lower_plate();
 
-for (z = [0, 3.2, 6.6, 10]) {
+for (z = [0, 3.2, 6.6]) {
   translate([0, 0, z + -1.6]) {
     for (i=[1:7]) {
       rotate([0, 0, 360/8 * i]) {
@@ -158,7 +246,7 @@ translate([0, 0, 3.5]) {
 
 translate([9.5 / 2 - 7.5, 55, 1.5 + 3.2]) rotate([0, 0, 180]) limit_switch();
 
-translate([0, 0, 7]) upper_plate();
+// translate([0, 0, 7]) upper_plate();
 
 translate([0, 0, 7]) {
   for (i=[1:7]) {
@@ -178,3 +266,25 @@ translate([0, 0, 8]) selector_wheel();
 translate([0, 0, 12]) {
   mounting_collar();
 }
+
+// translate([0, 0, 18]) {
+//   for (i=[1:7]) {
+//     rotate([0, 0, 360/8 * i]) {
+//       translate([0, 35, 0]) rotate([0, 0, 90]) {
+//         hose_tee();
+//       }
+//     }
+//   }
+// }
+// 
+// translate([0, 0, 15]) top_plate();
+
+// translate([0, 0, 7.5]) {
+//   for (i=[0:7]) {
+//     rotate([0, 0, 360/8 * i + 360/16]) {
+//       translate([0, (50 + 22) / 2, 0]) rotate([0, 0, 90]) {
+//         rotate([90, 0, 0]) !upper_to_top_strut();
+//       }
+//     }
+//   }
+// }
